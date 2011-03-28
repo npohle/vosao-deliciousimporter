@@ -1,0 +1,15 @@
+<vosao-plugin>
+    <name>deliciousimport</name>
+    <title>$deliciousimport.title</title>
+    <version>0.2.3</version>
+    <description>$deliciousimport.description</description>
+    <website>www.imaginarymachines.com</website>
+    <config>
+        <param name="cron" title="$deliciousimport.cron" type="String" value="every day" />
+        <param name="deliciousrssfeed" title="$deliciousimport.deliciousrssfeed" type="String" value="http://feeds.delicious.com/v2/rss/npohle?count=100" />
+        <param name="bitlyapikey" title="$deliciousimport.bitlyapikey" type="String" value="R_4adee85268e0c2c8c8f5a7c34a06aa3b" />
+    </config>
+    <entry-point-class>
+        com.imaginarymachines.vosao.deliciousimport.DeliciousimportEntryPoint
+    </entry-point-class>
+</vosao-plugin>

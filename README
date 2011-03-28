@@ -1,0 +1,11 @@
+
+D:\Eigene Dateien\vosao>mvn -Dappname=vosaocms clean package
+D:\Eigene Dateien\vosao\web\target\vosaocms>d:\temp\appengine-java-sdk-1.4.0\bin\appcfg.cmd update "D:\Eigene Dateien\vosao\web\target\vosaocms"
+
+D:\Eigene Dateien\vosao\web>ant runserver
+
+D:\Eigene Dateien\eclipse\workspace\deliciousimporter>mvn package
+D:\Eigene Dateien\eclipse\workspace\deliciousimporter>d:\nurago\atlassian-plugin-sdk-3.1.3\apache-maven\bin\mvn package
+
+
+http://www.imaginarymachines.com/_ah/reset_cache
