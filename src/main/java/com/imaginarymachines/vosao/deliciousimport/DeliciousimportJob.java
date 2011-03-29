@@ -73,139 +73,137 @@ public class DeliciousimportJob implements PluginCronJob {
         	//getMessageQueue().publish(new PageMessage(Topic.PAGE_PUBLISH_CRON, "message"));
         	
         	SimpleDateFormat formatter = new SimpleDateFormat("MM/dd/yyyy");
+        	Date now = new Date();
         	
-        	try {
-	        	Date now = new Date();
-	        	String title = "Digest from "+formatter.format(now);
-	        	PageEntity page = new PageEntity(title,"/blog/"+title);
-	        	page.setParentUrl("/blog");
-	        	page.setPublishDate(new Date());
-	        	page.setState(PageState.APPROVED);
-	        	
-	        	StructureTemplateEntity structureTemplate = VosaoContext.getInstance().getBusiness().getDao().getStructureTemplateDao().getByTitle("Article");
-	        	StructureEntity structure = VosaoContext.getInstance().getBusiness().getDao().getStructureDao().getByTitle("Blog article");
-	        	TemplateEntity template = VosaoContext.getInstance().getBusiness().getDao().getTemplateDao().getByUrl("coolblue10");
-	        	
-	        	page.setPageType(PageType.STRUCTURED);
-	        	page.setStructureId(structure.getId());
-	        	page.setStructureTemplateId(structureTemplate.getId());
-	        	page.setTemplate(template.getId());
-	        	VosaoContext.getInstance().getBusiness().getPageBusiness().save(page);
-	        	
-	        	/*
-	            <item>
-	            	<title>www.adamsdrafting.com/downloads/Best-Efforts-Practical-Lawyer.pdf</title>
-		            <pubDate>Thu, 24 Mar 2011 23:50:07 +0000</pubDate>
-		            <guid isPermaLink="false">http://www.delicious.com/url/c184fedc27a35d28a04c7d340f4ea993#npohle</guid>
-		            <link>http://www.adamsdrafting.com/downloads/Best-Efforts-Practical-Lawyer.pdf</link>
-		            <dc:creator><![CDATA[npohle]]></dc:creator>
-		            <comments>http://www.delicious.com/url/c184fedc27a35d28a04c7d340f4ea993</comments>
-		            <wfw:commentRss>http://feeds.delicious.com/v2/rss/url/c184fedc27a35d28a04c7d340f4ea993</wfw:commentRss>
-		            <source url="http://feeds.delicious.com/v2/rss/npohle">npohle's bookmarks</source>
-		            <category domain="http://www.delicious.com/npohle/">legal</category>
-		            <category domain="http://www.delicious.com/npohle/">sla</category>
-		            <category domain="http://www.delicious.com/npohle/">system:filetype:pdf</category>
-		            <category domain="http://www.delicious.com/npohle/">system:media:document</category>
-		            <enclosure url="http://www.adamsdrafting.com/downloads/Best-Efforts-Practical-Lawyer.pdf" type="application/pdf" length="1"/>
-	            </item>
-	        	*/
-
-	        	HashSet<SyndCategory> cats = new HashSet<SyndCategory>();
-	        	
-	        	StringBuffer overview = new StringBuffer("<ul>");
-	        	
-	        	try {
-	        		HttpClient httpclient = new HttpClient();
-	        		DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
-        			DocumentBuilder db = dbf.newDocumentBuilder();
-        			
-		        	FeedFetcher feedFetcher = new HttpURLFeedFetcher();
-		            //SyndFeed feed = feedFetcher.retrieveFeed(new URL("http://feeds.delicious.com/v2/rss/npohle?count=100"));
-		        	SyndFeed feed = feedFetcher.retrieveFeed(new URL(config.getDeliciousrssfeed()));
-		            List<SyndEntry> entries = feed.getEntries();
-		            Iterator<SyndEntry> iterEntries = entries.iterator();
-		            while (iterEntries.hasNext()) {
-		            	SyndEntry entry = iterEntries.next();
-		            	Date pubDate = entry.getPublishedDate();
-		            	if ((now.getTime() - pubDate.getTime())<1000*60*60*24) {
-		            		
-		            		cats.addAll(entry.getCategories());
-		            		
-		            		StringBuffer responseXml = new StringBuffer();
-		            		
-		            		try {
-		                        URL url = new URL("http://api.bit.ly/shorten"
-		                        		+"?longUrl="+URLEncoder.encode(entry.getLink())
-		                        		+"&version="+URLEncoder.encode("2.0.1")
-		                        		+"&login="+URLEncoder.encode("npohle")
-		                        		+"&apiKey="+URLEncoder.encode(config.getBitlyapikey())
-		                        		+"&format="+URLEncoder.encode("xml")
-		                        		+"&history="+URLEncoder.encode("1"));
-		                        BufferedReader reader = new BufferedReader(new InputStreamReader(url.openStream()));
-		                        String line;
-		                        while ((line = reader.readLine()) != null) {
-		                        	responseXml.append(line);
-		                        }
-		                        reader.close();
-		                        
-		                    } catch (Exception e) {
-		                        e.printStackTrace();
-		                    }
-		            		
-		            		String bitlylink = entry.getLink();
-		            		if(responseXml != null) {
-		            			StringReader st = new StringReader(responseXml.toString());
-		            			Document d = db.parse(new InputSource(st));
-		            			NodeList nl = d.getElementsByTagName("shortUrl");
-		            			if(nl != null) {
-		            				Node n = nl.item(0);
-		            				bitlylink = n.getTextContent();
-		            			}
-		            		}
-		            		
-		            		String desciption="";
-		            		if (entry.getDescription()!=null) desciption=entry.getDescription().getValue();
-		            		
-		            		overview.append("<li><a href=\""+bitlylink+"\">"+entry.getTitle()+"</a> <i>"+desciption+"</i></li>");
-		            		
-		            	}
-		            }
-	        	} catch(Exception e) {
-	        		e.printStackTrace();
-	        	}
-	        	overview.append("</ul>");
-	        	
-	        	StringBuffer xml = new StringBuffer("<?xml version=\"1.0\" encoding=\"utf-8\"?><content>");
-        		xml.append("<overview><![CDATA["+overview+"]]></overview>");
-                xml.append("<content><![CDATA[]]></content>");	        	
-	        	xml.append("</content>");
-	        	
-	        	VosaoContext.getInstance().getBusiness().getDao().getPageDao().setContent(page.getId(), "en", xml.toString());
-	        	
-	        	
-	        	
-	        	VosaoContext.getInstance().getBusiness().getPageBusiness().save(page);
-	        	
-        		
-        		Iterator<SyndCategory> iterCats = cats.iterator();
-        		while (iterCats.hasNext()) {
-        			SyndCategory cat = iterCats.next();
-        			TagEntity tag = VosaoContext.getInstance().getBusiness().getDao().getTagDao().getByName(null, cat.getName());
-        			if (tag==null) {
-        				tag = VosaoContext.getInstance().getBusiness().getDao().getTagDao().save(new TagEntity(null, cat.getName(), cat.getName()));
-        			}
-        			VosaoContext.getInstance().getBusiness().getTagBusiness().addTag(page.getFriendlyURL(), tag);
-        		}
-        		
-        		
-	        	
-	        	//VosaoContext.getInstance().getBusiness().getDao().getPageDao().setContent(page.getId(), "en", "Bla Bla Bla");
-	        	
-	        	
+        	int daysback = Integer.parseInt(config.getRecency());
+        	logger.info("DeliciousImport Recency = "+daysback+" days");
+        	
+        	try { 
+	        	HttpClient httpclient = new HttpClient();
+	    		DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
+				DocumentBuilder db = dbf.newDocumentBuilder();
 				
-        	} catch(Exception e) {
-        		logger.fatal("Error in DeliciousimportJob.java: "+e.getMessage(),e);
-        		e.printStackTrace();
+	        	FeedFetcher feedFetcher = new HttpURLFeedFetcher();
+	            //SyndFeed feed = feedFetcher.retrieveFeed(new URL("http://feeds.delicious.com/v2/rss/npohle?count=100"));
+	        	SyndFeed feed = feedFetcher.retrieveFeed(new URL(config.getDeliciousrssfeed()));
+	            List<SyndEntry> entries = feed.getEntries();
+	            
+	        	for (int i=0; i<=daysback; i++) {
+	        		Date day = new Date(now.getTime()-(i*1000*60*60*24));
+	        		
+		        	try {
+			        	
+			        	String title = "Digest from "+formatter.format(day);
+			        	
+			        	StringBuffer overview = new StringBuffer("<ul>");
+	
+			        	HashSet<SyndCategory> cats = new HashSet<SyndCategory>();
+	
+			        	try {
+			        		
+				            Iterator<SyndEntry> iterEntries = entries.iterator();
+				            while (iterEntries.hasNext()) {
+				            	SyndEntry entry = iterEntries.next();
+				            	Date pubDate = entry.getPublishedDate();
+				            	if (day.getDate()==pubDate.getDate() && day.getMonth()==pubDate.getMonth() && day.getYear()==pubDate.getYear()) {
+				            		
+				            		cats.addAll(entry.getCategories());
+				            		
+				            		StringBuffer responseXml = new StringBuffer();
+				            		
+				            		try {
+				                        URL url = new URL("http://api.bit.ly/shorten"
+				                        		+"?longUrl="+URLEncoder.encode(entry.getLink())
+				                        		+"&version="+URLEncoder.encode("2.0.1")
+				                        		+"&login="+URLEncoder.encode("npohle")
+				                        		+"&apiKey="+URLEncoder.encode(config.getBitlyapikey())
+				                        		+"&format="+URLEncoder.encode("xml")
+				                        		+"&history="+URLEncoder.encode("1"));
+				                        BufferedReader reader = new BufferedReader(new InputStreamReader(url.openStream()));
+				                        String line;
+				                        while ((line = reader.readLine()) != null) {
+				                        	responseXml.append(line);
+				                        }
+				                        reader.close();
+				                        
+				                    } catch (Exception e) {
+				                        e.printStackTrace();
+				                    }
+				            		
+				            		String bitlylink = entry.getLink();
+				            		if(responseXml != null) {
+				            			StringReader st = new StringReader(responseXml.toString());
+				            			Document d = db.parse(new InputSource(st));
+				            			NodeList nl = d.getElementsByTagName("shortUrl");
+				            			if(nl != null) {
+				            				Node n = nl.item(0);
+				            				bitlylink = n.getTextContent();
+				            			}
+				            		}
+				            		
+				            		String desciption="";
+				            		if (entry.getDescription()!=null) desciption=entry.getDescription().getValue();
+				            		
+				            		overview.append("<li><a href=\""+bitlylink+"\">"+entry.getTitle()+"</a> <i>"+desciption+"</i></li>");
+				            		
+				            	}
+				            }
+			        	} catch(Exception e) {
+			        		e.printStackTrace();
+			        	}
+			        	overview.append("</ul>");
+			        	
+			        	if (overview.length()>10) {
+			        	
+			        		logger.info("DelicousImport: Found content for "+day.toString());
+			        		
+				        	StringBuffer xml = new StringBuffer("<?xml version=\"1.0\" encoding=\"utf-8\"?><content>");
+			        		xml.append("<overview><![CDATA["+overview+"]]></overview>");
+			                xml.append("<content><![CDATA[]]></content>");	        	
+				        	xml.append("</content>");
+	
+				        	PageEntity page = new PageEntity(title,"/blog/"+title);
+				        	page.setParentUrl("/blog");
+				        	page.setPublishDate(day);
+				        	page.setState(PageState.APPROVED);
+				        	
+				        	StructureTemplateEntity structureTemplate = VosaoContext.getInstance().getBusiness().getDao().getStructureTemplateDao().getByTitle("Article");
+				        	StructureEntity structure = VosaoContext.getInstance().getBusiness().getDao().getStructureDao().getByTitle("Blog article");
+				        	TemplateEntity template = VosaoContext.getInstance().getBusiness().getDao().getTemplateDao().getByUrl("coolblue10");
+				        	
+				        	page.setPageType(PageType.STRUCTURED);
+				        	page.setStructureId(structure.getId());
+				        	page.setStructureTemplateId(structureTemplate.getId());
+				        	page.setTemplate(template.getId());
+				        	VosaoContext.getInstance().getBusiness().getPageBusiness().save(page);
+				        	
+				        	VosaoContext.getInstance().getBusiness().getDao().getPageDao().setContent(page.getId(), "en", xml.toString());
+				        	VosaoContext.getInstance().getBusiness().getPageBusiness().save(page);
+				        	
+			        		Iterator<SyndCategory> iterCats = cats.iterator();
+			        		while (iterCats.hasNext()) {
+			        			SyndCategory cat = iterCats.next();
+			        			TagEntity tag = VosaoContext.getInstance().getBusiness().getDao().getTagDao().getByName(null, cat.getName());
+			        			if (tag==null) {
+			        				tag = VosaoContext.getInstance().getBusiness().getDao().getTagDao().save(new TagEntity(null, cat.getName(), cat.getName()));
+			        			}
+			        			VosaoContext.getInstance().getBusiness().getTagBusiness().addTag(page.getFriendlyURL(), tag);
+			        		}
+		        		
+			        	}
+			        	
+			        	//VosaoContext.getInstance().getBusiness().getDao().getPageDao().setContent(page.getId(), "en", "Bla Bla Bla");
+			        	
+			        	
+						
+		        	} catch(Exception e) {
+		        		logger.fatal("Error in DeliciousimportJob.java: "+e.getMessage(),e);
+		        		e.printStackTrace();
+		        	}
+	        	}
+        	} catch (Exception ee) {
+        		logger.fatal("Error in DeliciousimportJob.java: "+ee.getMessage(),ee);
+        		ee.printStackTrace();
         	}
         }
 
@@ -216,6 +214,9 @@ public class DeliciousimportJob implements PluginCronJob {
                         Calendar cal = Calendar.getInstance();
                         String[] items = cron.split(" ");
                         if (cron.equals("every minute")) {return true;}
+                        if (cron.equals("every hour")) {
+                            return cal.get(Calendar.MINUTE) == 0;
+                        }
                         if (cron.equals("every day")) {
                                 // start at 01:00
                                 return cal.get(Calendar.HOUR_OF_DAY) == 1 

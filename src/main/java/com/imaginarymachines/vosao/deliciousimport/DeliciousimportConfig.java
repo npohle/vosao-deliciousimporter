@@ -5,12 +5,21 @@ package com.imaginarymachines.vosao.deliciousimport;
         private String cron;
         private String deliciousrssfeed;
         private String bitlyapikey;
+        private String recency;
 
 		public DeliciousimportConfig() { 
         }
 
 		public String getBitlyapikey() {
 			return bitlyapikey;
+		}
+
+		public String getRecency() {
+			return recency;
+		}
+
+		public void setRecency(String recency) {
+			this.recency = recency;
 		}
 
 		public void setBitlyapikey(String bitlyapikey) {

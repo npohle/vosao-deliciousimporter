@@ -34,6 +34,10 @@ public class DeliciousimportEntryPoint extends AbstractPluginEntryPoint {
                         
                         if (params.containsKey("bitlyapikey")) result.setBitlyapikey(params.get("bitlyapikey").getValue());
                         else result.setBitlyapikey(params.get("bitlyapikey").getDefaultValue());
+                        
+                        if (params.containsKey("recency")) result.setRecency(params.get("recency").getValue());
+                        else result.setRecency(params.get("recency").getDefaultValue());
+
                 }
                 catch (Exception e) {
                         logger.error("parameter: " + e.getMessage());
