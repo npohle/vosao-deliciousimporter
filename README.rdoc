@@ -6,10 +6,10 @@
 * Because a fully packaged plugin would end up having a size of >3m the libraries have to be provided through an own build of Vosao
 * refer to http://www.vosao.org/developer/doc/building for instructions on how to build Vosao
 * before build and deploy of Vosao put these libraries into /web/src/main/webapp/WEB-INF/lib:
-** <a href="http://www.jdom.org/dist/binary/">jdom-1.0.jar</a>
-** <a href="http://wiki.java.net/twiki/bin/view/Javawsxml/Rome1_0">rome-1.0.jar</a>
-** <a href="http://wiki.java.net/twiki/bin/view/Javawsxml/RomeFetcher">rome-fetcher-1.2.jar</a>
-** <a href="http://xerces.apache.org/mirrors.cgi">xercesImpl-2.4.0.jar</a>
+** jdom-1.0.jar[http://www.jdom.org/dist/binary/]
+** rome-1.0.jar[http://wiki.java.net/twiki/bin/view/Javawsxml/Rome1_0]
+** rome-fetcher-1.2.jar[http://wiki.java.net/twiki/bin/view/Javawsxml/RomeFetcher]
+** xercesImpl-2.4.0.jar[http://xerces.apache.org/mirrors.cgi]
 
 
 === Overview
