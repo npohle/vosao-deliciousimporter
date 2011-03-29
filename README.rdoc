@@ -6,10 +6,10 @@
 * Because a fully packaged plugin would end up having a size of >3m the libraries have to be provided through an own build of Vosao
 * refer to http://www.vosao.org/developer/doc/building for instructions on how to build Vosao
 * before build and deploy of Vosao put these libraries into /web/src/main/webapp/WEB-INF/lib:
-** jdom-1.0.jar[http://www.jdom.org/dist/binary/]
-** rome-1.0.jar[http://wiki.java.net/twiki/bin/view/Javawsxml/Rome1_0]
-** rome-fetcher-1.2.jar[http://wiki.java.net/twiki/bin/view/Javawsxml/RomeFetcher]
-** xercesImpl-2.4.0.jar[http://xerces.apache.org/mirrors.cgi]
+	* jdom-1.0.jar[http://www.jdom.org/dist/binary/]
+	* rome-1.0.jar[http://wiki.java.net/twiki/bin/view/Javawsxml/Rome1_0]
+	* rome-fetcher-1.2.jar[http://wiki.java.net/twiki/bin/view/Javawsxml/RomeFetcher]
+	* xercesImpl-2.4.0.jar[http://xerces.apache.org/mirrors.cgi]
 
 
 === Overview
@@ -17,9 +17,9 @@ This plugin gets installed as a cron job within Vosao.
 It can fetch the last n bookmarks saved to delicous using any Deliciuos RSS Feed. It will groups bookmarks by their creation date and publish a new article for the last n days containing an overview of the bookmarks for the respective day. All bookmarks are linked using bit.ly to provide a simple click tracking. The Digest article will be tagged with a cumulated list of delicious categories referenced in the article.
 
 * Articles will be created 
-** with the Title "Daily Digest for mm/dd/yyy"
-** in the path /blog
-** using the Structure Template "Article"
-** using the Structure "Blog article"
-** using the Template "coolblue10"
-** using the Language "en" 
+	* with the Title "Daily Digest for mm/dd/yyy"
+	* in the path /blog
+	* using the Structure Template "Article"
+	* using the Structure "Blog article"
+	* using the Template "coolblue10"
+	* using the Language "en" 
