@@ -161,9 +161,20 @@ public class DeliciousimportJob implements PluginCronJob {
 			        		xml.append("<overview><![CDATA["+overview+"]]></overview>");
 			                xml.append("<content><![CDATA[]]></content>");	        	
 				        	xml.append("</content>");
-	
+				        	
+				        	int versionidx = 0;
+				        	List<PageEntity> versions = VosaoContext.getInstance().getBusiness().getDao().getPageDao().selectByUrl("/blog/"+title);
+				        	if (versions.size()>0) {
+				        			for (PageEntity version : versions) {
+				        				if (version.getVersion()>versionidx) versionidx=version.getVersion();
+				        			}
+				        	}
+				        	versionidx += 1;
+				        	
 				        	PageEntity page = new PageEntity(title,"/blog/"+title);
 				        	page.setParentUrl("/blog");
+				        	page.setVersion(versionidx);
+				        	page.setVersionTitle("Version "+versionidx+" ("+formatter.format(now)+")");
 				        	page.setPublishDate(day);
 				        	page.setState(PageState.APPROVED);
 				        	
