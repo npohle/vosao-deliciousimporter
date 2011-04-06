@@ -1,7 +1,7 @@
 <vosao-plugin>
     <name>deliciousimport</name>
     <title>$deliciousimport.title</title>
-    <version>0.2.6</version>
+    <version>0.2.7</version>
     <description>$deliciousimport.description</description>
     <website>www.imaginarymachines.com</website>
     <config>

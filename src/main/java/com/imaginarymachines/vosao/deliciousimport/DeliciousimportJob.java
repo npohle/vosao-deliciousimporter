@@ -93,7 +93,7 @@ public class DeliciousimportJob implements PluginCronJob {
 	        		
 		        	try {
 			        	
-			        	String title = "Digest from "+formatter.format(day);
+			        	String title = "Digest "+formatter.format(day);
 			        	
 			        	StringBuffer overview = new StringBuffer("<ul>");
 	
