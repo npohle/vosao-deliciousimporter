@@ -1,2 +1,3 @@
 pubring.gpg~
 secring.gpg
+src/main/webapp/WEB-INF/credentials.json
